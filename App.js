@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import { SafeAreaView, StyleSheet, Text, View, TextInput, TouchableOpacity, Modal, Keyboard } from 'react-native';
 
@@ -25,13 +25,13 @@ const App = () => {
       const a = await AsyncStorage.getItem('@age')
       const c = await AsyncStorage.getItem('@country')
 
-      Keyboard.dismiss()
-
       setData([{
-        name : n,
-        age : a,
-        country : c
+        name: n,
+        age: a,
+        country: c
       }])
+
+      Keyboard.dismiss()
 
       setName('')
       setAge('')
@@ -40,6 +40,25 @@ const App = () => {
       setMsgModal(true)
     }
   }
+
+  useEffect(()=>{
+
+    async function fetchStorage() {
+
+      const n = await AsyncStorage.getItem('@name')
+      const a = await AsyncStorage.getItem('@age')
+      const c = await AsyncStorage.getItem('@country')
+
+      setData([{
+        name: n,
+        age: a,
+        country: c
+      }])
+    }
+
+    fetchStorage()
+ 
+  }, [])
 
   return (
     <SafeAreaView style={Styles.Page}>
@@ -85,7 +104,7 @@ const App = () => {
     >
       <View style={Styles.Modal}>
           {data.map((e)=> 
-            <View style={Styles.Box}>
+            <View style={Styles.Box} key={e.age}>
 
               <Text style={Styles.Title}>Dados Salvos</Text>
 
