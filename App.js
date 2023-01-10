@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
-import { SafeAreaView, StyleSheet, Text, View, TextInput, TouchableOpacity, Modal } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, TextInput, TouchableOpacity, Modal, Keyboard } from 'react-native';
 
 
 
@@ -25,15 +25,19 @@ const App = () => {
       const a = await AsyncStorage.getItem('@age')
       const c = await AsyncStorage.getItem('@country')
 
-      setData({
+      Keyboard.dismiss()
+
+      setData([{
         name : n,
         age : a,
         country : c
-      })
+      }])
 
       setName('')
       setAge('')
       setCountry('')
+
+      setMsgModal(true)
     }
   }
 
@@ -54,6 +58,7 @@ const App = () => {
         placeholder='Digite sua idade'
         value={age}
         onChangeText={(e) => setAge(e)}
+        keyboardType={'numeric'}
       />
 
       <TextInput
@@ -66,6 +71,7 @@ const App = () => {
       <TouchableOpacity style={Styles.Button} onPress={()=> SaveItems()}>
         <Text style={Styles.TextButton}>Alterar</Text>
       </TouchableOpacity>
+    
 
       <TouchableOpacity onPress={()=> setDataModal(true)}>
         <Text style={Styles.TextModal}>Ver dados</Text>
@@ -73,24 +79,56 @@ const App = () => {
 
     <Modal 
       visible={dataModal} 
-      transparent={false} 
-      animationType={'slide'} 
+      transparent={true} 
+      animationType={'fade'} 
       onRequestClose={()=> setDataModal(false)}
     >
-      <View style={Styles.Box}>
-          <Text>{JSON.stringify(data)}</Text>
+      <View style={Styles.Modal}>
+          {data.map((e)=> 
+            <View style={Styles.Box}>
+
+              <Text style={Styles.Title}>Dados Salvos</Text>
+
+              <Text>
+                <Text style={Styles.Key}>Nome : </Text> 
+                {e.name}
+              </Text>
+
+              <Text>
+                <Text style={Styles.Key}>Idade : </Text>
+                {e.age}
+              </Text>
+
+              <Text>
+                <Text style={Styles.Key}>País : </Text> 
+                {e.country}
+              </Text>
+
+              <TouchableOpacity style={Styles.Button} onPress={()=> setDataModal(false)}>
+                <Text style={Styles.TextButton}>Fechar</Text>
+              </TouchableOpacity>
+            </View>
+          )}
       </View>
     </Modal>
 
-{/*
+
     <Modal
       visible={msgModal}
-      transparent={false}
+      transparent={true}
       animationType={'fade'}
       onRequestClose={()=> setMsgModal(false)}
     >
+      <View style={Styles.Modal}>
+          <View style={Styles.Box}>
+            <Text style={Styles.Title}>Dados salvos com sucesso</Text>
 
-    </Modal> */}
+            <TouchableOpacity style={Styles.Button} onPress={() => setMsgModal(false)}>
+              <Text style={Styles.TextButton}>Fechar</Text>
+            </TouchableOpacity>
+          </View>
+      </View>
+    </Modal>
 
     </SafeAreaView>
   );
@@ -105,9 +143,9 @@ const Styles = StyleSheet.create({
   },
 
   Input : {
-    width : '90%',
-    padding : 15,
-    marginTop : 15,
+    width : '85%',
+    padding : 12,
+    marginTop : 10,
 
     backgroundColor: '#D3D3D3',
     borderRadius : 15
@@ -119,7 +157,7 @@ const Styles = StyleSheet.create({
     backgroundColor: '#1E90FF',
     borderRadius : 15,
 
-    width : '90%',
+    width : '85%',
     padding : 15,
     margin : 15,
   },
@@ -135,7 +173,7 @@ const Styles = StyleSheet.create({
 
   Title : {
     fontSize : 20,
-    margin : 10,
+    margin : 5,
     marginTop : 15
   },
 
@@ -145,8 +183,27 @@ const Styles = StyleSheet.create({
     marginTop : 120
   },
 
+  Modal : {
+    backgroundColor : 'rgba(0, 0, 0, 0.3)',
+    flex : 1,
+    justifyContent : 'center',
+    alignItems : 'center',
+  },
+
   Box : {
-    color : 'black'
+    width : '90%',
+    paddingTop : 10,
+
+    justifyContent : 'center',
+    alignItems : 'center',
+
+    backgroundColor : '#fff',
+    borderRadius : 15,
+  },
+
+  Key : {
+    fontWeight : 'bold',
+    fontSize : 17,
   }
 });
 
